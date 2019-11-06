@@ -2,14 +2,33 @@
 #Using Zomato API we obtain resturants names in the Las Vegas area and their Reviews
 #API KEY: aa2e170fced5e4de42b96789a76fbd7f
 
-import requests
-from pprint import pprint
+import pprint
+from pyzomato import Pyzomato
+pp = pprint.PrettyPrinter(indent=2)
 
+p = Pyzomato("aa2e170fced5e4de42b96789a76fbd7f")
+p.search(q="las vegas")
 
-locationUrlFromLatLong = "https://developers.zomato.com/api/v2.1/cities?lat=28&lon=77"
-header = {"User-agent": "curl/7.43.0", "Accept": "application/json", "user_key": "aa2e170fced5e4de42b96789a76fbd7f"}
+categories = p.getCategories()
+pp.pprint( categories )
 
-response = requests.get(locationUrlFromLatLong, headers=header)
+dets = p.getCollectionsViaCityId(282)
+pp.pprint( dets )
 
-pprint(response.json())
+cus = p.getCuisines(282)
+pp.pprint( cus )
 
+estab = p.getEstablishments(282)
+pp.pprint( estab )
+
+#need resturant ID
+menu = p.getDailyMenu(292)
+pp.pprint( menu )
+
+#need resturant ID
+info = p.getRestaurantDetails(292)
+pp.pprint( info )
+
+#need resturant ID
+reviews = p.getRestaurantReviews(291)
+pp.pprint( reviews )
