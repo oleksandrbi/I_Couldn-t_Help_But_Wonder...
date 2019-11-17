@@ -86,6 +86,71 @@ def addTweets(con,tweets,query,restaurant_id):
 #tweet is tweepy tweet
 #All twitter calls must have tweet_mode='extended'
 def addTweet(con,tweet,query, restaurant_id, commit):
+
+    #These are all Indented b/c they are only called from AddTweet
+    #Adds user to the twitter_users table
+    #only call from addTweet
+    def addUser(con, userData,commit):
+        data = {
+        'user_id' : userData['id'],
+        'full_name' : userData['name'],
+        'username' : userData['screen_name'],
+        'follower_count' : userData['followers_count'],
+        'verified' : userData['verified'],
+        'statuses_count' : userData['statuses_count']
+        }
+        insert(con, 'twitter_users',data,commit)
+
+    #Only call from addTweet
+    def parseEntities(con, entities,tweet_id, commit):
+        #start stop index are [)
+        #These are double indented to run from parseEntities
+        #only call from addTweet
+        def addHashtag(con, hashtagData,tweet_id,commit):
+            data = {
+                'tweet_id' : tweet_id,
+                'entity_type' : 'HASHTAG',
+                'start_index' : hashtagData['indices'][0],
+                'stop_index' : hashtagData['indices'][1],
+                'text' : hashtagData['text']
+            }
+            insert(con,'tweet_entities',data,commit)
+
+        #only Call from Addtweet
+        def addURL(con, urlData,tweet_id,commit):
+            data = {
+                'tweet_id' : tweet_id,
+                'entity_type' : 'URL',
+                'url' : urlData['url'],
+                'display_url'  : urlData['display_url'],
+                'expanded_url' : urlData['expanded_url'],
+                'start_index' : urlData['indices'][0],
+                'stop_index' : urlData['indices'][1]
+            }
+            insert(con,'tweet_entities',data,commit)
+
+        #Only Call from AddTweet
+        def addUserMention(con,userMenData,tweet_id,commit):
+            data = {
+                'tweet_id' : tweet_id,
+                'entity_type' : 'USER_MENTION',
+                'start_index' : userMenData['indices'][0],
+                'stop_index' : userMenData['indices'][1],
+                'user_id' : userMenData['id'],
+                'username' : userMenData['screen_name'],
+                'full_name' :userMenData['name']
+                }
+            insert(con,'tweet_entities',data,commit)
+
+        for hashtag in entities['hashtags']:
+            addHashtag(con,hashtag,tweet_id,commit)
+        for url in entities['urls']:
+            addURL(con,url,tweet_id,commit)
+
+        for mention in entities['user_mentions']:
+            addUserMention(con,mention,tweet_id,commit)
+
+    #addTweet Method Begins
     twData = tweet._json
     data = {
     'tweet_id' : twData['id'],
@@ -112,65 +177,5 @@ def addTweet(con,tweet,query, restaurant_id, commit):
 
     #Parse user
     addUser(con,twData['user'],commit)
-    #if user exists, update
+    #Parse Entities
     parseEntities(con,twData['entities'],twData['id'],commit)
-    #parse user
-    #parse Entities
-    #Manage Duplicates
-
-def addUser(con, userData,commit):
-    data = {
-    'user_id' : userData['id'],
-    'full_name' : userData['name'],
-    'username' : userData['screen_name'],
-    'follower_count' : userData['followers_count'],
-    'verified' : userData['verified'],
-    'statuses_count' : userData['statuses_count']
-    }
-    insert(con, 'twitter_users',data,commit,updateDuplicates=True)
-
-#Only call from local
-def parseEntities(con, entities,tweet_id, commit):
-    for hashtag in entities['hashtags']:
-        addHashtag(con,hashtag,tweet_id,commit)
-    for url in entities['urls']:
-        addURL(con,url,tweet_id,commit)
-
-    for mention in entities['user_mentions']:
-        addUserMention(con,mention,tweet_id,commit)
-
-#start stop index are [)
-def addHashtag(con, hashtagData,tweet_id,commit):
-    data = {
-        'tweet_id' : tweet_id,
-        'entity_type' : 'HASHTAG',
-        'start_index' : hashtagData['indices'][0],
-        'stop_index' : hashtagData['indices'][1],
-        'text' : hashtagData['text']
-    }
-    insert(con,'tweet_entities',data,commit)
-
-def addURL(con, urlData,tweet_id,commit):
-    data = {
-        'tweet_id' : tweet_id,
-        'entity_type' : 'URL',
-        'url' : urlData['url'],
-        'display_url'  : urlData['display_url'],
-        'expanded_url' : urlData['expanded_url'],
-        'start_index' : urlData['indices'][0],
-        'stop_index' : urlData['indices'][1]
-    }
-    insert(con,'tweet_entities',data,commit)
-
-
-def addUserMention(con,userMenData,tweet_id,commit):
-    data = {
-        'tweet_id' : tweet_id,
-        'entity_type' : 'USER_MENTION',
-        'start_index' : userMenData['indices'][0],
-        'stop_index' : userMenData['indices'][1],
-        'user_id' : userMenData['id'],
-        'username' : userMenData['screen_name'],
-        'full_name' :userMenData['name']
-        }
-    insert(con,'tweet_entities',data,commit)
