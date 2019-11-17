@@ -5,7 +5,6 @@
 import pymysql
 from datetime import datetime
 from dateutil.parser import parse
-import pprint
 
 
 #method to get connection to sql database
@@ -21,7 +20,7 @@ def getConnection():
 
 #Execute a SQL Command, Return values if any selected
 #Commit: If true, will commit changes
-def execute(con,sql,commit):
+def execute(con,sql,commit=False):
     print("Executing :", sql)
     with con:
         cursor = con.cursor()
@@ -35,29 +34,10 @@ def execute(con,sql,commit):
 #Selects and returns all columns and rows from table
 def selectAll(con, table):
     with con:
-        cursor = con.cursor()
         sql = "SELECT * FROM %s"%(table)
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-        cursor.close()
+        rows = execute(con,sql)
         return rows
 
-#used to format Columns for SQL Inputs
-def getColsString(colsIter):
-    cols = ""
-    for col in colsIter:
-        cols = cols + col + ","
-    cols = cols[:-1]
-    return cols
-
-#used to format Values for SQL Inputs
-def getValuesString(con,valsIter):
-    values = ""
-    for val in valsIter:
-        #con.escape adds quotes, escapes escape chars, converts datetime/bool/others
-        values = values + con.escape(val) + ","
-    values = values[:-1]
-    return values
 
 #Adds Data to SQL Database
 #data is {column : value}
@@ -75,18 +55,26 @@ def insert(con,table, data,commit,ignoreDuplicates=True,updateDuplicates=False):
     else:
         sql = "INSERT INTO %s (%s) VALUES (%s)"
     #Create string of columns
-    cols = getColsString(data.keys())
-    values = getValuesString(con,data.values())
+    cols = ""
+    for col in data.keys():
+        cols = cols + col + ","
+    cols = cols[:-1]
+    #Create string of values
+    values = ""
+    for val in data.values():
+        #con.escape adds quotes, escapes escape chars, converts datetime/bool/others
+        values = values + con.escape(val) + ","
+    values = values[:-1]
     if(ignoreDuplicates):
         #end of str is 'UPDATE col=col', where col is any existing val, works to ignore
-        print(sql)
         sql = sql%(table,cols,values,list(data)[0],list(data)[0])
     else:
         sql = sql%(table,cols,values)
     execute(con, sql, commit)
-    return data
+
 
 #Add a list of tweets from a tweepy search
+#All twitter calls must have tweet_mode='extended'
 def addTweets(con,tweets,query,restaurant_id):
     for tweet in tweets:
         addTweet(con,tweet,query,restaurant_id,False)
@@ -111,7 +99,6 @@ def addTweet(con,tweet,query, restaurant_id, commit):
     'restaurant_id' : restaurant_id,
     'twitter_client' : twData['source']
     }
-    print(twData['favorite_count'])
     #deal with if quoted tweet
     if(twData['is_quote_status']):
         data['quoted_tweet_id'] = twData['quoted_status_id']
@@ -121,7 +108,6 @@ def addTweet(con,tweet,query, restaurant_id, commit):
         data['retweeted_tweet_id'] = twData['retweeted_status']['id']
     if('in_reply_to_status_id' in twData):
         data['reply_to_tweet_id'] = twData['in_reply_to_status_id']
-    #pprint.pprint(data)
     insert(con, 'raw_tweets',data, commit)
 
     #Parse user
@@ -145,7 +131,6 @@ def addUser(con, userData,commit):
 
 #Only call from local
 def parseEntities(con, entities,tweet_id, commit):
-    print(entities)
     for hashtag in entities['hashtags']:
         addHashtag(con,hashtag,tweet_id,commit)
     for url in entities['urls']:
@@ -156,7 +141,6 @@ def parseEntities(con, entities,tweet_id, commit):
 
 #start stop index are [)
 def addHashtag(con, hashtagData,tweet_id,commit):
-    print(hashtagData)
     data = {
         'tweet_id' : tweet_id,
         'entity_type' : 'HASHTAG',
