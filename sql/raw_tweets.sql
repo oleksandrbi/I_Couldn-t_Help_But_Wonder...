@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 17, 2019 at 04:42 AM
+-- Generation Time: Nov 26, 2019 at 03:37 AM
 -- Server version: 5.5.60-MariaDB
 -- PHP Version: 5.4.16
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `raw_tweets` (
   `retweeted_tweet_id` bigint(20) DEFAULT NULL,
   `reply_to_tweet_id` bigint(20) DEFAULT NULL,
   `user_id` bigint(20) NOT NULL,
-  `twitter_query` text NOT NULL,
+  `twitter_query` varchar(500) NOT NULL,
   `restaurant_id` int(11) NOT NULL,
   `twitter_client` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
