@@ -35,7 +35,7 @@ for i, line in enumerate(Bfile):
     hours = data['hours']
 
     # add to the data collected so far
-    if (city == "Las Vegas"):
+    if (city == "Las Vegas") and (is_open != 0):
         all_data.append([business_id,name,address,city,state,postal_code,latitude,longitude,stars,review_count,is_open,attributes,categories,hours])
 
 # create the DataFrame
@@ -70,7 +70,7 @@ for i, line in enumerate(Rfile):
     hours = data['hours']
 
     # add to the data collected so far
-    if (city == "Las Vegas"):
+    if (city == "Las Vegas") and (is_open != 0):
         all_data.append([business_id,name,address,city,state,postal_code,latitude,longitude,stars,review_count,is_open,attributes,categories,hours])
 
 # create the DataFrame
