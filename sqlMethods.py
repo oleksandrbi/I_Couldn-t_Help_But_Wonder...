@@ -62,8 +62,13 @@ def insert(con,table, data,commit,ignoreDuplicates=True,updateDuplicates=False):
     #Create string of values
     values = ""
     for val in data.values():
-        #con.escape adds quotes, escapes escape chars, converts datetime/bool/others
-        values = values + con.escape(val) + ","
+        #con.escape adds quotes, escapes escape chars, converts datetime/bool/others, doesn't work on dicts
+        #escapedVal is val but in format valid for SQL
+        if type(val) == dict:
+            escapedVal = con.escape(str(val))
+        else:
+            escapedVal = con.escape(val)
+        values = values + escapedVal + ","
     values = values[:-1]
     if(ignoreDuplicates):
         #end of str is 'UPDATE col=col', where col is any existing val, works to ignore
@@ -80,7 +85,7 @@ def addYelpRestaurants(con,restaurants):
 
 def addYelpReviews(con,reviews):
     for rev in reviews:
-        insert(con, 'restaurant_reviews', rev, False)
+        insert(con, 'yelp_reviews', rev, False)
     con.commit()
 
 

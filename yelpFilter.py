@@ -6,7 +6,7 @@
 
 import json
 import pandas as pd
-from 'sqlMethods.py' import *
+from sqlMethods import *
 
 
 BUZZfilePATH = r'/Users/alexkaish/Documents/YelpData/mini_business.json'
@@ -47,7 +47,7 @@ def main():
 
     #Get Restaurant IDs to get REVIEWS
     restIds = yelpData['restaurant_id']
-    yelpData.to_csv('vegasBUZZ.csv')
+    yelpData.to_csv('./yelpDATASET/vegasBUZZ.csv')
     print("BUSINESS")
     print(yelpData)
     Bfile.close()
@@ -83,7 +83,7 @@ def main():
 
     # create the DataFrame
     df = pd.DataFrame(all_data)
-    df.to_csv('vegasREV.csv')
+    df.to_csv('./yelpDATASET/vegasREV.csv')
     print("REVIEWS")
     print(df)
     Rfile.close()

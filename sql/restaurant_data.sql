@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 26, 2019 at 05:27 AM
+-- Generation Time: Dec 01, 2019 at 10:44 PM
 -- Server version: 5.5.60-MariaDB
 -- PHP Version: 5.4.16
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_data` (
   `review_count` int(11) NOT NULL,
   `attributes` text,
   `categories` text NOT NULL,
-  `hours` text NOT NULL
+  `hours` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -55,4 +55,3 @@ ALTER TABLE `restaurant_data`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
