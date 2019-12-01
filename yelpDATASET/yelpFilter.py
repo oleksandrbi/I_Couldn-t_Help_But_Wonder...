@@ -4,6 +4,7 @@
 # Description   : opens yelp dataset with business and gives user all the business in Vegas area, then it filters out the revies by resturant ID
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+import re
 import json
 import pandas as pd
 
@@ -34,9 +35,13 @@ for i, line in enumerate(Bfile):
     categories = data['categories']
     hours = data['hours']
 
+    if (categories is not None):
+        mylist = categories.split(',')
+   
     # add to the data collected so far
-    if (city == "Las Vegas") and (is_open != 0):
+    if (city == "Las Vegas") and (is_open != 0) and ("Restaurants" in mylist):
         all_data.append([business_id,name,address,city,state,postal_code,latitude,longitude,stars,review_count,is_open,attributes,categories,hours])
+
 
 # create the DataFrame
 df = pd.DataFrame(all_data, columns=['business_id','name','address','city','state','postal_code','latitude','longitude','stars','review_count','is_open','attributes','categories','hours'])
@@ -44,6 +49,7 @@ df.to_csv('vegasBUZZ.csv')
 print("BUSINESS")
 print(df)
 Bfile.close()
+
 
 #ALL STUFF TO GET VEGAS REVIEWS
 # open input file: 
@@ -69,8 +75,11 @@ for i, line in enumerate(Rfile):
     categories = data['categories']
     hours = data['hours']
 
+    if (categories is not None):
+        mylist = categories.split(',')
+   
     # add to the data collected so far
-    if (city == "Las Vegas") and (is_open != 0):
+    if (city == "Las Vegas") and (is_open != 0) and ("Restaurants" in mylist):
         all_data.append([business_id,name,address,city,state,postal_code,latitude,longitude,stars,review_count,is_open,attributes,categories,hours])
 
 # create the DataFrame
