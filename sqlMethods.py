@@ -72,6 +72,19 @@ def insert(con,table, data,commit,ignoreDuplicates=True,updateDuplicates=False):
         sql = sql%(table,cols,values)
     execute(con, sql, commit)
 
+#This Section is yelp
+def addYelpRestaurants(con,restaurants):
+    for rest in restaurants:
+        insert(con, 'restaurant_data', rest, False)
+    con.commit()
+
+def addYelpReviews(con,reviews):
+    for rev in reviews:
+        insert(con, 'restaurant_reviews', rev, False)
+    con.commit()
+
+
+#All Below are methods for Tweets
 
 #Add a list of tweets from a tweepy search
 #All twitter calls must have tweet_mode='extended'
