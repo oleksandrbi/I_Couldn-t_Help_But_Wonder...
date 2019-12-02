@@ -34,7 +34,7 @@ api = tweepy.API(auth)
 class StreamListener(tweepy.StreamListener):
 	def on_status(self, status):
 		#print the text from the tweet
-		print(status,text)
+		print(status.text)
 
 		#we can filter to remove a tweet if it was retweeted
 		#if status.retweeted_status:
