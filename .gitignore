@@ -6,3 +6,6 @@ yelpDATASET/.~lock.vegasREV.csv#
 .DS_Store
 .DS_Store
 .DS_Store
+*.pyc
+yelpDATASET/vegasREV.csv
+yelpDATASET/vegasREV.csv
