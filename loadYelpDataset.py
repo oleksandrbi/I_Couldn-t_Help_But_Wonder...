@@ -9,12 +9,13 @@ import pandas as pd
 from sqlMethods import *
 
 
-BUZZfilePATH = r'/Users/alexkaish/Documents/YelpData/mini_business.json'
-REVfilePATH = r'/Users/alexkaish/Documents/YelpData/mini_review.json'
+BUZZfilePATH = r'/home/admin/Downloads/YelpData/business.json'
+REVfilePATH = r'/home/admin/Downloads/YelpData/review.json'
 
 def main():
     #ALL STUFF TO GET VEGAS BUSINESS
     # open input file:
+    print("FILTERING BUSINESSES")
     Bfile = open(BUZZfilePATH, encoding="utf8")
     all_data = list()
     for i, line in enumerate(Bfile):
@@ -44,19 +45,18 @@ def main():
 
     # create the DataFrame
     yelpData = pd.DataFrame(all_data)
-
     #Get Restaurant IDs to get REVIEWS
     restIds = yelpData['restaurant_id']
     yelpData.to_csv('./yelpDATASET/vegasBUZZ.csv')
     print("BUSINESS")
     print(yelpData)
     Bfile.close()
-
+    print("LOADING BUSINESSES INTO DB")
     #Load into database
     con = getConnection()
     addYelpRestaurants(con,all_data)
 
-
+    print("PROCESSING REVIEWS")
     #ALL STUFF TO GET VEGAS REVIEWS
     # open input file:
     Rfile = open(REVfilePATH, encoding="utf8")
@@ -88,6 +88,7 @@ def main():
     print(df)
     Rfile.close()
     #add to Database
+    print("LOADING REVIEWS INTO DB")
     addYelpReviews(con,all_data)
     con.close()
 
