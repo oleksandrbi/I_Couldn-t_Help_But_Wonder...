@@ -13,6 +13,14 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 
+from sqlMethods import *
+
+
+#Get the Queries to Search on from DB
+def getQueries(con):
+	return selectAll(con, 'twitter_queries')
+
+
 #consumer key
 TWITTER_APP_KEY= 'WsYpQaVZFwyQCKm4aesis6yFo'
 #consumer Secret
@@ -39,12 +47,18 @@ class StreamListener(tweepy.StreamListener):
 		#we can filter to remove a tweet if it was retweeted
 		#if status.retweeted_status:
 			#return
-		
+
 	def on_error(self, status_code):
 		print(status_code)
 
+#Get queries from the DB
+con = getConnection()
+queries = getQueries(con)
+print(queries)
+con.close()
 #start the listener
 #this will stream tweets of the topic indicated in the filer
+
 stream_listener= StreamListener()
 stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
 stream.filter(track=['Las Vagas', 'food'])
