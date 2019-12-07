@@ -32,9 +32,12 @@ def execute(con,sql,commit=False):
         return rows
 
 #Selects and returns all columns and rows from table
-def selectAll(con, table):
+def selectAll(con, table,extra=None):
     with con:
-        sql = "SELECT * FROM %s"%(table)
+        if(extra == None):
+            sql = "SELECT * FROM %s"%(table)
+        else:
+            sql = "SELECT * FROM %s %s"%(table, extra)
         rows = execute(con,sql)
         return rows
 
