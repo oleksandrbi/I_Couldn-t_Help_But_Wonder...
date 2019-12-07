@@ -7,10 +7,10 @@ PORT = 65432
 def ui(s, label):
     if label == 'y':
         print('sending y')
-        s.send(b'y')
+        s.send(b'POS')
     elif label == 'n':
         print('sending n')
-        s.send(b'n')
+        s.send(b'NEG')
     elif label == 'exit':
         running = False
     else:
@@ -20,6 +20,8 @@ def ui(s, label):
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
+
+    #Identification 
     s.send(b'yx')
     s.settimeout(5)
 
