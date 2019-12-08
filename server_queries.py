@@ -108,11 +108,23 @@ class ClientThread(threading.Thread):
                 #need to send : restInfo
                 dx = r_message.encode('ASCII')
                 self.csocket.send(dx)
-                label = self.csocket.recv(1024)
+                bool = self.csocket.recv(1024)
+                q = self.csocket.recv(1024)
+
+                intB = int.from_bytes(bool, byteorder='little')
+                if (intB == 1):
+                    locationBool = True
+                else:
+                    locationBool = False
+
+                print("test")
+                print(intB)
+                print(locationBool)
+                print(q)
+                sys.stdout.flush()
                 #Need to recieve "location boolean, other queries"
 
                 #test Data, Delete Below
-                locationBool=True
                 queries = []
                 queries.append(rest['restaurant_name'])
                 #test Data, Delete Above

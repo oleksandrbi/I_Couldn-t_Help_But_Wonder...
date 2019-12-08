@@ -11,9 +11,12 @@ def newUI(info):
     locResp = input("Were the tweets from that URl relevant? Enter y or n :")
     #Put in code to verify that answer was y or n
     if (locResp == 'y'):
-        locBool = True
+        print("you inputed yes")
+        locBool = 1
+        print(locBool)
     else:
-        locBool = False
+        print("you entered no")
+        locBool = 0
     queries = input("Please enter other Valid twitter queries for this restaurant : ")
     #put in code to verify that queries are in correct format, figure out a correct format
     return locBool, queries
@@ -44,6 +47,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while(running):
         data = s.recv(1024)
         #Change to Str?
-        print(data.decode('ASCII'))
-        label = input()
-        ui(s, label)
+        datas = data.decode('ASCII')
+        bool, query = newUI(datas)
+        querys = query.encode('ASCII')
+        s.send(bool.to_bytes(2, 'little'))
+        s.send(querys)
