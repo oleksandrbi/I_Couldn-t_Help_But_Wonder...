@@ -6,13 +6,13 @@
 import pandas as pd
 import csv
 import sys
-import mysql.connector
 import tweepy
 
 from tweepy.api import API
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+from sqlMethods import *
 
 #consumer key
 TWITTER_APP_KEY= 'WsYpQaVZFwyQCKm4aesis6yFo'
@@ -29,18 +29,12 @@ auth.set_access_token(TWITTER_KEY, TWITTER_SECRET)
 
 api = tweepy.API(auth)
 
-def get_queries():
-#establish a connection to the sql database
-	mydb = mysql.connector.connect( host = "localhost", 
-					user = "root@localhost",
-					passwd="SCL$Xdat$ML",
-					database="Wonder", )
-	mycursor = mydb.cursor()
-	#executes this sql statement - get the queries when the type is a query 
-	#does not work with locations
-	mycursor.execute("SELECT twitter_query FROM twitter_queries WHERE query_type="QUERY"")
+def get_queries(con):
 
-	return mycursor.fetchall()
+	#executes this sql statement - get the queries when the type is a query
+	#does not work with locations
+	queries = execute(con,"SELECT twitter_query,restaurant_id FROM twitter_queries WHERE query_type='QUERY'")
+	return queries
 
 #set up the listener
 #on_status: create a listener that only takes the text of the tweet
@@ -53,7 +47,7 @@ class StreamListener(tweepy.StreamListener):
 		#we can filter to remove a tweet if it was retweeted
 		#if status.retweeted_status:
 			#return
-		
+
 	def on_error(self, status_code):
 		print(status_code)
 
@@ -62,9 +56,13 @@ def main():
 	#this will stream tweets of the topic indicated in the filer
 	stream_listener= StreamListener()
 	stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
+	#establish a connection to the sql database
+	con = getConnection()
 	#get the keywords (hashtags) that the stream should pull about the restaurtant from twitter_queries table in database using the get_queries function
-	rest_track=get_queries()
+	rest_track=get_queries(con)
 	stream.filter(track=rest_track)
 	stream.flush()
+	#Closes Connection to the SQL Database
+	con.close()
 
 main()
