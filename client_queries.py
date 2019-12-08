@@ -43,6 +43,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     running = True
     while(running):
         data = s.recv(1024)
-        print('Received', repr(data))
+        #Change to Str?
+        print(data.decode('ASCII'))
         label = input()
         ui(s, label)

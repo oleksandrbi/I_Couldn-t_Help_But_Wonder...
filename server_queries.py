@@ -3,33 +3,8 @@ import sys
 import pymysql
 import pandas as pd
 import urllib.parse
+from sqlMethods import *
 
-
-def getConnection():
-    connection = pymysql.connect(host='10.22.12.131',
-                                 user='root',
-                                 password='SCL$Xdat4ML',
-                                 db='Wonder',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor)
-    return connection
-
-def execute(con,sql,commit=False):
-    print("Executing :", sql)
-    with con:
-        cursor = con.cursor()
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-        cursor.close()
-        if(commit):
-            con.commit()
-        return rows
-
-def selectAll(con, table):
-    with con:
-        sql = "SELECT * FROM %s LIMIT 10"%(table)
-        rows = execute(con,sql)
-        return rows
 
 #gets query to Store in DB
 def getTwitterLocQuery(rest):
@@ -41,36 +16,61 @@ def getTwitterLocSearchURL(rest):
     url = 'https://twitter.com/search?q=' + urllib.parse.quote('lang:en geocode:' + getTwitterLocQuery(rest))
     return url
 
-
 def getMessage(rest):
-
-    info ='Your next restaurant is : \n' + rest['restaurant_name'] +  rest['address'] + '\n' + rest['city'] + ', ' +rest['state'] + ' ' + str(rest['postal_code']) + '\n The url to search for tweets at this location is : \n' + getTwitterLocSearchURL(rest)
+    info ='Your next restaurant is : \n' + rest['restaurant_name'] + '\n'+  rest['address'] + '\n' + rest['city'] + ', ' +rest['state'] + ' ' + str(rest['postal_code']) + '\n The url to search for tweets at this location is : \n' + getTwitterLocSearchURL(rest)
     return info
 
-def addQueries(con,restID,locBool, locQuery,queries):
-    #I'll code this later tn or tmmrw
-    pass
+def addQueries(con,restID,locBool, locText,queries):
+    if (locBool):
+        locQuery = {'twitter_query' : locText,
+        'query_type' : 'LOCATION',
+        'restaurant_id' : restID }
+        insert(con,'twitter_queries',locQuery,False)
+    for queryText in queries:
+        query = {'twitter_query' : queryText,
+        'query_type' : 'QUERY',
+        'restaurant_id' : restID }
+        insert(con,'twitter_queries',query,False)
+    #Updates Restaurnt Entry in DB
+    sql = "UPDATE restaurant_data SET queries_set='1' WHERE restaurant_id='%s'"%restID;
+    execute(con,sql)
+    con.commit()
 
+def getRestFromDB(con):
+    sql = """
+            SELECT
+                restaurant_data.*,
+                COUNT(yelp_reviews.review_id) AS num_recent_reviews
+            FROM
+                yelp_reviews
+                    JOIN
+                restaurant_data ON yelp_reviews.restaurant_id = restaurant_data.restaurant_id
+            WHERE
+                timestamp >= '2017-11-14 18:06:13'
+                    AND queries_set = 0
+            GROUP BY restaurant_id
+            ORDER BY num_recent_reviews DESC
+            LIMIT 100
+        """
+    corpus = execute(con, sql)
+    df = pd.DataFrame(corpus)
+    df.set_index('restaurant_id',inplace = True)
+    df['active'] = 0 #used to make sure no one works on the same Restaurant at the same time
+    return df
+
+def getNextRestaurant():
+    toClassify =  df[(df['active'] == 0) & (df['queries_set'] == 0)]
+    if (toClassify.size > 0):
+        return toClassify.iloc[0]
+    else:
+        print("Ran out of Restaurants, start the program again")
+        con.close()
+        exit()
+        #Tony idk if this is good but I couldn't figure out how to reload into the same df from the function
+
+#Begin Program
 con = getConnection()
-sql = """
-        SELECT
-            restaurant_data.*,
-            COUNT(yelp_reviews.review_id) AS num_recent_reviews
-        FROM
-            yelp_reviews
-                JOIN
-            restaurant_data ON yelp_reviews.restaurant_id = restaurant_data.restaurant_id
-        WHERE
-            timestamp >= '2017-11-14 18:06:13'
-                AND queries_set = 0
-        GROUP BY restaurant_id
-        ORDER BY num_recent_reviews DESC
-        LIMIT 100
-    """
-corpus = execute(con, sql)
-df = pd.DataFrame(corpus)
-df.set_index('restaurant_id',inplace = True)
-df['active'] = 0 #used to make sure no one works on the same program at the same time
+df = getRestFromDB(con)
 
 #Thread to handle socket connection from client
 class ClientThread(threading.Thread):
@@ -96,9 +96,10 @@ class ClientThread(threading.Thread):
                 u_id = '4'
             elif datas == 'ricky':
                 u_id = '5'
-            #Is there a way to update this every time the foro loop runs, Tony ignore this problem I'll fix it
-            for r_id in df[(df['active'] == 0) & (df['queries_set'] == 0)].index:
-                rest = df.loc[r_id]
+            #Maybe figure out how to ask "Do you want to continue? in the client and send that responce"
+            while(True):
+                rest = getNextRestaurant()
+                r_id = rest.name
                 #mark as active so not sent to a diff user
                 df.at[r_id,'active'] = 1
                 r_message = getMessage(rest)
@@ -110,13 +111,15 @@ class ClientThread(threading.Thread):
                 label = self.csocket.recv(1024)
                 #Need to recieve "location boolean, other queries"
 
-                addQueries(con,id,locationBool,r_loc,queries)
+                #test Data, Delete Below
+                locationBool=True
+                queries = []
+                queries.append(rest['restaurant_name'])
+                #test Data, Delete Above
 
-                stored_value = "('" + u_id + "', '" + t_id + "', '" + label.decode("utf-8") + "');"
-                sql = "INSERT INTO raw_manual_tweet_sentiments (client_id, tweet_id, sentiment) VALUES " + stored_value
-                print(sql)
+                addQueries(con,r_id,locationBool,r_loc,queries)
+
                 sys.stdout.flush()
-                execute(con, sql)
                 #Set that it is done in local df
                 df.at[r_id,'active'] = 0
                 df.at[r_id,'queries_set'] = 1
