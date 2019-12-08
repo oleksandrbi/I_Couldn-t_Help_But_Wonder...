@@ -66,7 +66,7 @@ def getNextRestaurant():
         print("Ran out of Restaurants, start the program again")
         con.close()
         exit()
-        #Tony idk if this is good but I couldn't figure out how to reload into the same df from the function
+
 
 #Begin Program
 con = getConnection()
@@ -106,7 +106,7 @@ class ClientThread(threading.Thread):
                 r_loc = getTwitterLocQuery(rest)
 
                 #need to send : restInfo
-                dx = r_message.encode('ASCII')
+                dx = r_message.encode('utf-8')
                 self.csocket.send(dx)
                 bool = self.csocket.recv(1024)
                 q = self.csocket.recv(1024)
@@ -124,10 +124,9 @@ class ClientThread(threading.Thread):
                 sys.stdout.flush()
                 #Need to recieve "location boolean, other queries"
 
-                #test Data, Delete Below
-                queries = []
-                queries.append(rest['restaurant_name'])
-                #test Data, Delete Above
+                queriesText = q.decode('utf-8')
+                queries = queriesText.split(',')
+
 
                 addQueries(con,r_id,locationBool,r_loc,queries)
 

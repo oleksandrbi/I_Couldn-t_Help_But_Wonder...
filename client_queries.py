@@ -9,7 +9,8 @@ def newUI(info):
     print(info)
     print()
     locResp = input("Were the tweets from that URl relevant? Enter y or n :")
-    #Put in code to verify that answer was y or n
+    while(locResp != 'y' and locResp != 'n'):
+        locResp = input("That was not a valid answer, please entere either y or n : ")
     if (locResp == 'y'):
         print("you inputed yes")
         locBool = 1
@@ -17,24 +18,11 @@ def newUI(info):
     else:
         print("you entered no")
         locBool = 0
-    queries = input("Please enter other Valid twitter queries for this restaurant : ")
+    queries = input("Please enter other Valid twitter queries for this restaurant, seperated by commas: ")
     #put in code to verify that queries are in correct format, figure out a correct format
     return locBool, queries
     #send THIS info back to the Server
 
-def ui(s, label):
-    if label == 'y':
-        print('sending y')
-        s.send(b'POS')
-    elif label == 'n':
-        print('sending n')
-        s.send(b'NEG')
-    elif label == 'exit':
-        running = False
-    else:
-        print("Wrong format of input, Please enter y for yes, n for no. exit for closing this program")
-        rl = input()
-        ui(s, rl)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
@@ -47,8 +35,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while(running):
         data = s.recv(1024)
         #Change to Str?
-        datas = data.decode('ASCII')
+        datas = data.decode('utf-8')
         bool, query = newUI(datas)
-        querys = query.encode('ASCII')
+        querys = query.encode('utf-8')
         s.send(bool.to_bytes(2, 'little'))
         s.send(querys)
