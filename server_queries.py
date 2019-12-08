@@ -1,6 +1,9 @@
 import socket, threading
 import sys
 import pymysql
+import pandas as pd
+import urllib.parse
+
 
 def getConnection():
     connection = pymysql.connect(host='10.22.12.131',
@@ -28,10 +31,46 @@ def selectAll(con, table):
         rows = execute(con,sql)
         return rows
 
+#gets query to Store in DB
+def getTwitterLocQuery(rest):
+    loc = str(rest['latitude']) + ',' + str(rest['longitude']) + ',.5km'
+    return loc
+
+#Gets url to show to show in program
+def getTwitterLocSearchURL(rest):
+    url = 'https://twitter.com/search?q=' + urllib.parse.quote('lang:en geocode:' + getTwitterLocQuery(rest))
+    return url
+
+
+def getMessage(rest):
+
+    info ='Your next restaurant is : \n' + rest['restaurant_name'] +  rest['address'] + '\n' + rest['city'] + ', ' +rest['state'] + ' ' + str(rest['postal_code']) + '\n The url to search for tweets at this location is : \n' + getTwitterLocSearchURL(rest)
+    return info
+
+def addQueries(con,restID,locBool, locQuery,queries):
+    #I'll code this later tn or tmmrw
+    pass
 
 con = getConnection()
-sql = "SELECT review_id, review_text FROM yelp_reviews"
+sql = """
+        SELECT
+            restaurant_data.*,
+            COUNT(yelp_reviews.review_id) AS num_recent_reviews
+        FROM
+            yelp_reviews
+                JOIN
+            restaurant_data ON yelp_reviews.restaurant_id = restaurant_data.restaurant_id
+        WHERE
+            timestamp >= '2017-11-14 18:06:13'
+                AND queries_set = 0
+        GROUP BY restaurant_id
+        ORDER BY num_recent_reviews DESC
+        LIMIT 100
+    """
 corpus = execute(con, sql)
+df = pd.DataFrame(corpus)
+df.set_index('restaurant_id',inplace = True)
+df['active'] = 0 #used to make sure no one works on the same program at the same time
 
 #Thread to handle socket connection from client
 class ClientThread(threading.Thread):
@@ -57,18 +96,30 @@ class ClientThread(threading.Thread):
                 u_id = '4'
             elif datas == 'ricky':
                 u_id = '5'
+            #Is there a way to update this every time the foro loop runs, Tony ignore this problem I'll fix it
+            for r_id in df[(df['active'] == 0) & (df['queries_set'] == 0)].index:
+                rest = df.loc[r_id]
+                #mark as active so not sent to a diff user
+                df.at[r_id,'active'] = 1
+                r_message = getMessage(rest)
+                r_loc = getTwitterLocQuery(rest)
 
-            for x in corpus:
-                t_context = x['review_text']
-                t_id = x['review_id']
-                dx = t_context.encode('ASCII')
+                #need to send : restInfo
+                dx = r_message.encode('ASCII')
                 self.csocket.send(dx)
                 label = self.csocket.recv(1024)
+                #Need to recieve "location boolean, other queries"
+
+                addQueries(con,id,locationBool,r_loc,queries)
+
                 stored_value = "('" + u_id + "', '" + t_id + "', '" + label.decode("utf-8") + "');"
                 sql = "INSERT INTO raw_manual_tweet_sentiments (client_id, tweet_id, sentiment) VALUES " + stored_value
                 print(sql)
                 sys.stdout.flush()
                 execute(con, sql)
+                #Set that it is done in local df
+                df.at[r_id,'active'] = 0
+                df.at[r_id,'queries_set'] = 1
 
         print ("Client at ", clientAddress , " disconnected...")
 
