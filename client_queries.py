@@ -19,6 +19,8 @@ def newUI(info):
         print("you entered no")
         locBool = 0
     queries = input("Please enter other Valid twitter queries for this restaurant, seperated by commas: ")
+    if queries == '':
+        queries = 'NONE'
     #put in code to verify that queries are in correct format, figure out a correct format
     return locBool, queries
     #send THIS info back to the Server

@@ -4,6 +4,7 @@ import pymysql
 import pandas as pd
 import urllib.parse
 from sqlMethods import *
+import errno
 
 
 #gets query to Store in DB
@@ -81,59 +82,73 @@ class ClientThread(threading.Thread):
     def run(self):
         print ("Connection from : ", clientAddress)
         msg = ''
-        while True:
-            data = self.csocket.recv(1024)
-            if not data:
-                break
-            datas = data.decode('ASCII')
-            if datas == 'yx':
-                u_id = '1'
-            elif datas == 'alexk':
-                u_id = '2'
-            elif datas == 'alexb':
-                u_id = '3'
-            elif datas == 'cg':
-                u_id = '4'
-            elif datas == 'ricky':
-                u_id = '5'
-            #Maybe figure out how to ask "Do you want to continue? in the client and send that responce"
-            while(True):
-                rest = getNextRestaurant()
-                r_id = rest.name
-                #mark as active so not sent to a diff user
-                df.at[r_id,'active'] = 1
-                r_message = getMessage(rest)
-                r_loc = getTwitterLocQuery(rest)
+        data = self.csocket.recv(1024)
+        if not data:
+            return
+        datas = data.decode('ASCII')
+        if datas == 'yx':
+            u_id = '1'
+        elif datas == 'alexk':
+            u_id = '2'
+        elif datas == 'alexb':
+            u_id = '3'
+        elif datas == 'cg':
+            u_id = '4'
+        elif datas == 'ricky':
+            u_id = '5'
+        #Maybe figure out how to ask "Do you want to continue? in the client and send that responce"
+        while(True):
+            rest = getNextRestaurant()
+            r_id = rest.name
+            #mark as active so not sent to a diff user
+            df.at[r_id,'active'] = 1
+            r_message = getMessage(rest)
+            r_loc = getTwitterLocQuery(rest)
+            #need to send : restInfo
 
-                #need to send : restInfo
-                dx = r_message.encode('utf-8')
+            dx = r_message.encode('utf-8')
+            try:
                 self.csocket.send(dx)
+            except:
+               # remote peer disconnected
+               print("Detected remote disconnect")
+               df.at[r_id,'active'] = 0
+               break
+            try:
                 bool = self.csocket.recv(1024)
                 q = self.csocket.recv(1024)
+                print(not bool, not q)
+                if not bool and not q:
+                    print("Detected remote disconnect")
+                    df.at[r_id,'active'] = 0
+                    break
+            except:
+               # remote peer disconnected
+               print("Detected remote disconnect")
+               df.at[r_id,'active'] = 0
+               break
+            intB = int.from_bytes(bool, byteorder='little')
+            if (intB == 1):
+                locationBool = True
+            else:
+                locationBool = False
 
-                intB = int.from_bytes(bool, byteorder='little')
-                if (intB == 1):
-                    locationBool = True
-                else:
-                    locationBool = False
-
-                print("test")
-                print(intB)
-                print(locationBool)
-                print(q)
-                sys.stdout.flush()
-                #Need to recieve "location boolean, other queries"
-
-                queriesText = q.decode('utf-8')
+            print("test")
+            print(intB)
+            print(locationBool)
+            print(q)
+            sys.stdout.flush()
+            #Need to recieve "location boolean, other queries"
+            queriesText = q.decode('utf-8')
+            if queriesText != 'NONE':
                 queries = queriesText.split(',')
-
-
-                addQueries(con,r_id,locationBool,r_loc,queries)
-
-                sys.stdout.flush()
-                #Set that it is done in local df
-                df.at[r_id,'active'] = 0
-                df.at[r_id,'queries_set'] = 1
+            else:
+                queries = []
+            addQueries(con,r_id,locationBool,r_loc,queries)
+            sys.stdout.flush()
+            #Set that it is done in local df
+            df.at[r_id,'active'] = 0
+            df.at[r_id,'queries_set'] = 1
 
         print ("Client at ", clientAddress , " disconnected...")
 
