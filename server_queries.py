@@ -152,7 +152,7 @@ class ClientThread(threading.Thread):
 
         print ("Client at ", clientAddress , " disconnected...")
 
-LOCALHOST = "127.0.0.1"
+LOCALHOST = ''
 PORT = 65432
 
 #declaring server socket
