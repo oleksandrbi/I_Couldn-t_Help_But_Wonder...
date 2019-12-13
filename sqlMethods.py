@@ -94,7 +94,7 @@ def addYelpReviews(con,reviews):
 
 #All Below are methods for Tweets
 
-#Add a list of tweets from a tweepy search
+#Add a list of tweets from a python twitter search
 #All twitter calls must have tweet_mode='extended'
 def addTweets(con,tweets,query,restaurant_id):
     for tweet in tweets:
@@ -104,7 +104,7 @@ def addTweets(con,tweets,query,restaurant_id):
 
 
 #Adds a Tweet and its user, and all  entities within it (hashtags, user mentions, and urls)to the databases
-#tweet is tweepy tweet
+#tweet is python twitter tweet
 #All twitter calls must have tweet_mode='extended'
 def addTweet(con,tweet,query, restaurant_id, commit):
 
@@ -172,7 +172,7 @@ def addTweet(con,tweet,query, restaurant_id, commit):
             addUserMention(con,mention,tweet_id,commit)
 
     #addTweet Method Begins
-    twData = tweet._json
+    twData = tweet
     data = {
     'tweet_id' : twData['id'],
     'tweet_text' : twData['full_text'],
