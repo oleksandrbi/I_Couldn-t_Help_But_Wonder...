@@ -65,7 +65,7 @@ def getNextRestaurant():
         return toClassify.iloc[0]
     else:
         print("Ran out of Restaurants, start the program again")
-        con.close()
+        #con.close()
         exit()
 
 

@@ -21,6 +21,15 @@ def getConnection():
 #Execute a SQL Command, Return values if any selected
 #Commit: If true, will commit changes
 def execute(con,sql,commit=False):
+    #Check to make sure con is still active
+    if not con.open:
+        print("Connection to SQL Server has been dropped. Attempting to reconnect")
+        max_attempts = 10
+        trynum = 0
+        while not con.open and trynum < max_attempts:
+            con.ping(reconnect=True)
+
+
     print("Executing :", sql)
     with con:
         cursor = con.cursor()
