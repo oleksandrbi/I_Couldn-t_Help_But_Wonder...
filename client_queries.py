@@ -1,7 +1,7 @@
 import socket
 import select
 
-HOST = 'LOCALHOST'
+HOST = '10.22.12.224'
 PORT = 65432
 
 def newUI(info):
