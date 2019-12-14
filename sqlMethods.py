@@ -89,16 +89,17 @@ def insert(con,table, data,commit,ignoreDuplicates=True,updateDuplicates=False):
         sql = sql%(table,cols,values)
     execute(con, sql, commit)
 
-#This Section is yelp
-def addYelpRestaurants(con,restaurants):
-    for rest in restaurants:
-        insert(con, 'restaurant_data', rest, False)
+def insertAll(con,table, allData,ignoreDuplicates=True,updateDuplicates=False):
+    for data in allData:
+        insert(con,table, data,False,ignoreDuplicates=ignoreDuplicates,updateDuplicates=updateDuplicates)
     con.commit()
 
+#This Section is yelp
+def addYelpRestaurants(con,restaurants):
+    insertAll(con, 'restaurant_data', restaurants)
+
 def addYelpReviews(con,reviews):
-    for rev in reviews:
-        insert(con, 'yelp_reviews', rev, False)
-    con.commit()
+    insertAll(con, 'yelp_reviews', reviews)
 
 
 #All Below are methods for Tweets
@@ -106,9 +107,12 @@ def addYelpReviews(con,reviews):
 #Add a list of tweets from a python twitter search
 #All twitter calls must have tweet_mode='extended'
 def addTweets(con,tweets,query,restaurant_id):
+    added = []
     for tweet in tweets:
-        addTweet(con,tweet,query,restaurant_id,False)
+        tw = addTweet(con,tweet,query,restaurant_id,False)
+        added.append(tw)
     con.commit()
+    return added
 
 
 
@@ -209,3 +213,4 @@ def addTweet(con,tweet,query, restaurant_id, commit):
     addUser(con,twData['user'],commit)
     #Parse Entities
     parseEntities(con,twData['entities'],twData['id'],commit)
+    return data

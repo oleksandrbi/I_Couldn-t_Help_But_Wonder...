@@ -28,10 +28,12 @@ def addQueries(con,restID,locBool, locText,queries):
         'restaurant_id' : restID }
         insert(con,'twitter_queries',locQuery,False)
     for queryText in queries:
-        query = {'twitter_query' : queryText,
-        'query_type' : 'QUERY',
-        'restaurant_id' : restID }
-        insert(con,'twitter_queries',query,False)
+        #check if q has any text
+        if (queryText.strip() != ''):
+            query = {'twitter_query' : queryText,
+            'query_type' : 'QUERY',
+            'restaurant_id' : restID }
+            insert(con,'twitter_queries',query,False)
     #Updates Restaurnt Entry in DB
     sql = "UPDATE restaurant_data SET queries_set='1' WHERE restaurant_id='%s'"%restID;
     execute(con,sql)
