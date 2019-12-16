@@ -26,7 +26,25 @@
           <button class="fas fa-search" type="button" onclick="window.location.href='rest.html'"> </button>
       </div>
     </div>
-
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+    http://10.22.12.234/res/mcdonalds
+    http://10.22.12.234/
+    Testing
+    function httpGet(theUrl)
+    {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+    httpGet("http://10.22.12.234/%22) 
+        
     <audio controls>
       <source src="mus.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
