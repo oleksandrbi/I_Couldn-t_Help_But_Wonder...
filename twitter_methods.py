@@ -18,19 +18,6 @@ def get_all_entities(con):
     df = pd.DataFrame(data).drop_duplicates()
     return df
 
-
-#     sql = """SELECT
-#                 tweet_id, entity_type, start_index, stop_index
-#             FROM
-#                 tweet_entities
-#             WHERE
-#                 tweet_id = '%s'
-#                     AND (entity_type = 'USER_MENTION'
-#                     OR entity_type = 'URL')
-#             order by stop_index """%tweet_id
-
-
-
 #clean an individual tweet
 def clean_tweet(tw,entitiesDf):
     tweet_id = tw['tweet_id']
@@ -78,16 +65,18 @@ def clean_tweets(con,newTweets = []):
         }
         clean_tweets.append(dbObj)
     insertAll(con,'clean_tweets',clean_tweets,updateDuplicates=True)
+    return clean_tweets
 
-def getAndClean():
+def getTweetsAndClean():
     con = getConnection()
     t_obj=authTW()
     tweets = get_tweets(t_obj)
-    clean_tweets(con,tweets)
+    clean = clean_tweets(con,tweets)
     con.close()
+    return clean
 
 def main():
-    getAndClean()
+    getTweetsAndClean()
     #t_obj=authTW()
     #get_tweets(t_obj) #rename to load tweets
     #Classify New tweets
