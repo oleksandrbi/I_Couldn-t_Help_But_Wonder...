@@ -1,9 +1,16 @@
-from flask import Flask
+from flask import *
 from sqlMethods import *
 import pymysql
 import json
 
 # to install : pip3 install flask
+
+#for converting datetimes to json
+def dtJson(dt):
+    if isinstance(dt, datetime):
+        return dt.__str__()
+
+
 
 app = Flask(__name__)
 
@@ -27,15 +34,40 @@ def get_time():
     return json.dumps(s)
 
 @app.route("/listRes",methods = ['GET'])
-def get_restaurants():
+def listRes():
     con = getConnection()
     sql = "SELECT restaurant_id, restaurant_name FROM restaurant_data WHERE queries_set=1"
     data =  execute(con,sql)
+    con.close()
     return json.dumps(data)
 
-@app.route("/res/<name>",methods = ['GET'])
-def display_res(name):
-    return (name)
+@app.route("/get_restaurant/<rest_id>",methods = ['GET'])
+def get_restaurant(rest_id):
+    con = getConnection()
+    sql = "SELECT * from restaurant_data WHERE restaurant_id = '%s'" % rest_id
+    data = execute(con,sql)
+    con.close()
+    if len(data) > 0:
+        return json.dumps(data[0])
+    else:
+        #id not valid id
+        abort(404)
+
+#you can adjust this to get less data by changing * to the columns you need
+@app.route("/get_tweets/<rest_id>",methods = ['GET'])
+def get_tweets(rest_id):
+    con = getConnection()
+    sql = "SELECT * from raw_tweets WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
+    data = execute(con, sql)
+    con.close()
+    if len(data) > 0:
+        return json.dumps(data,default = dtJson)
+    else:
+        #id not valid id
+        abort(404)
+
+
+
 
 if __name__ == "__main__":
     app.run()
