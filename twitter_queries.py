@@ -7,7 +7,6 @@ import pandas as pd
 import csv
 import sys
 import pymysql
-import tweepy
 
 from sqlMethods import addTweets,getConnection
 from authTwitter2 import authTW
@@ -48,8 +47,7 @@ def get_tweets(t_obj):
 		#check if q has any text
 		if (q.strip() != ''):
 			# use the twitter api to get the tweets
-
-			search_results = t_obj.search.tweets( q = q, count = count,tweet_mode='extended')
+			search_results = t_obj.search.tweets( q = q, count = count,tweet_mode='extended',lang='en')
 			# filter the json results just to status
 			statuses = search_results['statuses']
 		 	#Collect List of New IDS or instead

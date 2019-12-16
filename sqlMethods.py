@@ -136,7 +136,7 @@ def addTweet(con,tweet,query, restaurant_id, commit):
         insert(con, 'twitter_users',data,commit)
 
     #Only call from addTweet
-    def parseEntities(con, entities,tweet_id, commit):
+    def parseEntities(con, tweet,tweet_id, commit):
         #start stop index are [)
         #These are double indented to run from parseEntities
         #only call from addTweet
@@ -176,13 +176,28 @@ def addTweet(con,tweet,query, restaurant_id, commit):
                 }
             insert(con,'tweet_entities',data,commit)
 
+        def addMedia(con,mediaData, tweet_id,commit):
+            data = {
+                'tweet_id' : tweet_id,
+                'entity_type' : 'MEDIA',
+                'url' : mediaData['url'],
+                'display_url'  : mediaData['display_url'],
+                'expanded_url' : mediaData['expanded_url'],
+                'start_index' : mediaData['indices'][0],
+                'stop_index' : mediaData['indices'][1]
+            }
+            insert(con,'tweet_entities',data,commit)
+
+        entities = tweet['entities']
         for hashtag in entities['hashtags']:
             addHashtag(con,hashtag,tweet_id,commit)
         for url in entities['urls']:
             addURL(con,url,tweet_id,commit)
-
         for mention in entities['user_mentions']:
             addUserMention(con,mention,tweet_id,commit)
+        if('extended_entities' in tweet):
+            for media in tweet['extended_entities']['media']:
+                addMedia(con,media,tweet_id,commit)
 
     #addTweet Method Begins
     twData = tweet
@@ -212,5 +227,5 @@ def addTweet(con,tweet,query, restaurant_id, commit):
     #Parse user
     addUser(con,twData['user'],commit)
     #Parse Entities
-    parseEntities(con,twData['entities'],twData['id'],commit)
+    parseEntities(con,twData,twData['id'],commit)
     return data

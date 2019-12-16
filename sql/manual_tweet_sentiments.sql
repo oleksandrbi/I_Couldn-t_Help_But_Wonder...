@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 15, 2019 at 10:47 PM
+-- Generation Time: Dec 16, 2019 at 12:06 AM
 -- Server version: 5.5.60-MariaDB
 -- PHP Version: 5.4.16
 
@@ -23,22 +23,13 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tweet_entities`
+-- Table structure for table `manual_tweet_sentiments`
 --
 
-CREATE TABLE IF NOT EXISTS `tweet_entities` (
-  `entity_id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `manual_tweet_sentiments` (
   `tweet_id` bigint(20) NOT NULL,
-  `entity_type` set('HASHTAG','URL','USER_MENTION','MEDIA') NOT NULL,
-  `start_index` int(11) NOT NULL,
-  `stop_index` int(11) NOT NULL,
-  `text` text,
-  `url` text,
-  `display_url` text,
-  `expanded_url` text,
-  `user_id` bigint(20) DEFAULT NULL,
-  `username` text,
-  `full_name` text
+  `sentiment` int(11) NOT NULL,
+  `relevant` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -46,20 +37,11 @@ CREATE TABLE IF NOT EXISTS `tweet_entities` (
 --
 
 --
--- Indexes for table `tweet_entities`
+-- Indexes for table `manual_tweet_sentiments`
 --
-ALTER TABLE `tweet_entities`
-  ADD PRIMARY KEY (`entity_id`);
+ALTER TABLE `manual_tweet_sentiments`
+  ADD PRIMARY KEY (`tweet_id`);
 
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `tweet_entities`
---
-ALTER TABLE `tweet_entities`
-  MODIFY `entity_id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
