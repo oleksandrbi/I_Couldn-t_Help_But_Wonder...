@@ -1,0 +1,93 @@
+<!<!DOCTYPE html>
+<html>
+
+<head>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    .body{
+      font-family:Didot;
+      background: url("back.jpg") no repeat center;
+    }
+
+    .checked{
+      color: orange
+    }
+
+    .bar{
+      border: 5px solid lightblue;
+      background-color: lightgrey;
+      width: 100vw;
+      height:
+    }
+
+    .middle{
+      background-color:white;
+      border-radius: 20px;
+      text-align: center;
+      font-family:Didot;
+      padding: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .left_stuff{
+      float:left;
+      width: 500px;
+      font-family:Didot;
+    }
+
+    .right_stuff{
+      float: right;
+      width: 100px;
+      font-family:Didot;
+    }
+
+    .box{
+      background-color: lightgrey;
+      width: 300px;
+      border: 5px solid lightblue;
+      padding: 30px;
+      margin: 20px;
+      align: center;
+    }
+  </style>
+
+</head>
+<body class=body>
+  <div class=bar><h1>RESTAURTANT NAME</h1></div>
+
+  <div class=middle, align="center">
+    <h1> New Posts about You! </h1>
+    <h2>Twitter</h2>
+      <div class=box></div>
+    <h2>Yelp</h2>
+      <div class=box></div>
+  </div>
+
+<div class=left_stuff>
+    <h3>Average Star Review</h3>
+    <p>taken from table restaurant_data column avg_yelp_rating</p>
+    <div class=checked>
+      <span class="fa fa-star checked"></span>
+      <span class="fa fa-star checked"></span>
+      <span class="fa fa-star checked"></span>
+      <span class="fa fa-star"></span>
+      <span class="fa fa-star"></span>
+    </div>
+
+    <h3>Common Compliments</h3>
+      <p>This is going to require a BoW on the tweets.</p>
+    <h3>Common Complaints</h3>
+      <p>This is going to require a BoW on the tweets.</p>
+</div>
+
+<div class=right_stuff>
+  <h3>General Sentiment</h3>
+  <div class=box></div>
+</div>
+
+
+</body>
+</html>
