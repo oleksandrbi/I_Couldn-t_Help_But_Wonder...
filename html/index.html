@@ -14,42 +14,45 @@
 
     <div class="wrapper">
       <div class="search_box">
-          <input type="text" placeholder="Rediscover your Resturant" list="cars">
-          
-            <datalist id="cars">
-              <option>Volvo</option>
-              <option>Saab</option>
-              <option>Mercedes</option>
-              <option>Audi</option>
+          <input id="inputBox" type="text" placeholder="Rediscover your Resturant" list="rests">
+
+            <datalist id="rests">
+
             </datalist>
-         
+
           <button class="fas fa-search" type="button" onclick="window.location.href='rest.html'"> </button>
       </div>
     </div>
+    <script>
         function httpGet(theUrl)
         {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-            xmlHttp.send( null );
+            xmlHttp.send();
             return xmlHttp.responseText;
+
         }
-        http://10.22.12.234/res/mcdonalds
-        http://10.22.12.234/
-        Testing
-        function httpGet(theUrl)
-        {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-            xmlHttp.send( null );
-            return xmlHttp.responseText;
+        var request = httpGet('http://127.0.0.1:5000/listRes')
+        let listRest = JSON.parse(request)
+
+        console.log(listRest)
+        let datalist = document.getElementById('rests')
+        for( i = 0 ; i < listRest.length; i++  ){
+          var opt = document.createElement("OPTION");
+          var t = document.createTextNode(listRest[i]['restaurant_name'])
+          opt.appendChild(t)
+          datalist.appendChild(opt)
         }
-        httpGet("http://10.22.12.234/%22) 
-        
+
+
+
+    </script>
+    <!--
     <audio controls>
       <source src="mus.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
-    </audio> 
-    
+    </audio>
+    !-->
   </body>
 
 </html>
