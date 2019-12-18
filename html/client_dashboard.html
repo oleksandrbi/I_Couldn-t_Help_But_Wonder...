@@ -60,7 +60,8 @@
 </head>
 
 <body class=body>
-  <div class=bar><h1 id = name>RESTAURTANT NAME</h1></div>
+  <div class=bar><h1 id = name>RESTAURTANT NAME</h1>
+  <h2 id = 'address'>123 Main Street Las Vegas, Nevada</h2></div>
 
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
@@ -111,6 +112,10 @@ function httpGet(theUrl)
 var rest_id = 'N0CoaG3cBrTGm2ecLYSzqA';
 var request = httpGet('http://127.0.0.1:5000/get_restaurant/' + rest_id);
 let r_data = JSON.parse(request);
+//Set name
+document.getElementById('name').innerHTML = r_data['restaurant_name']
+document.getElementById('address').innerHTML = r_data['address'] + ' Las Vegas, NV'
+
 console.log(r_data);
 
 
