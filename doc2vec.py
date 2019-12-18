@@ -75,7 +75,7 @@ model.build_vocab(sentences.to_array())
 model.train(sentences.sentences_perm(), total_examples=model.corpus_count, epochs=model.epochs)
 
 #Save and load current model
-#model.save('./imdb.d2v')
+model.save('./imdb.d2v')
 #model = Doc2Vec.load('./imdb.d2v')
 
 print("---test---")
