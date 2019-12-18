@@ -9,7 +9,7 @@
   <style>
     .body{
       font-family:Didot;
-      background-image: url('back.jpg');
+      /*background-image: url('back.jpg');*/
     }
 
     .checked{
@@ -60,7 +60,7 @@
 </head>
 
 <body class=body>
-  <div class=bar><h1>RESTAURTANT NAME</h1></div>
+  <div class=bar><h1 id = name>RESTAURTANT NAME</h1></div>
 
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
@@ -99,6 +99,22 @@
 </body>
 
 <script>
+
+function httpGet(theUrl)
+{
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+    xmlHttp.send();
+    return xmlHttp.responseText;
+
+}
+var rest_id = 'N0CoaG3cBrTGm2ecLYSzqA';
+var request = httpGet('http://127.0.0.1:5000/get_restaurant/' + rest_id);
+let r_data = JSON.parse(request);
+console.log(r_data);
+
+
+  //graph
   var trace1 = {
     x: [1, 2, 3, 4, 5, 6, 7],
     y: [0, 10, 15, 13, 17, 20, 23],

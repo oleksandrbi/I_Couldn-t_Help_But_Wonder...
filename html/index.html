@@ -14,13 +14,13 @@
 
     <div class="wrapper">
       <div class="search_box">
-          <input id="inputBox" type="text" placeholder="Rediscover your Resturant" list="rests">
+          <input id="inputBox" type="text" placeholder="Rediscover your Resturant" list="rests"/>
 
             <datalist id="rests">
 
             </datalist>
 
-          <button class="fas fa-search" type="button" onclick="window.location.href='rest.html'"> </button>
+          <button class="fas fa-search" type="button" onclick="goNext()"> </button>
       </div>
     </div>
     <script>
@@ -32,6 +32,17 @@
             return xmlHttp.responseText;
 
         }
+        function goNext(rest_id)
+        {
+          console.log(rest_id)
+          if (rest_id == ''){
+            alert('Please select a restaurant')
+          }
+          else{
+            //window.location.href='client_dashboard.html?id=' + rest_id ;
+            console.log(rest_id)
+          }
+        }
         var request = httpGet('http://127.0.0.1:5000/listRes')
         let listRest = JSON.parse(request)
 
@@ -41,7 +52,10 @@
           var opt = document.createElement("OPTION");
           var t = document.createTextNode(listRest[i]['restaurant_name'])
           opt.appendChild(t)
+          opt.setAttribute('data-id',listRest[i]['restaurant_id'])
           datalist.appendChild(opt)
+          input = document.getElementById('inputBox')
+
         }
 
 
