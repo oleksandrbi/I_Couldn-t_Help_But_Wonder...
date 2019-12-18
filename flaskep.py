@@ -4,6 +4,7 @@ from sqlMethods import *
 import pymysql
 import json
 import pandas as pd
+import sys
 
 # to install : pip3 install flask
 # pip3 install -U flask-cors
@@ -78,8 +79,8 @@ def get_tweets(rest_id):
         #id not valid id
         abort(404)
 
-
-def get_sentiment_count():
+@app.route("/get_sentiment/<rest_id>",methods = ['GET'])
+def get_sentiment_count(rest_id):
     con = getConnection()
     sql ="""
     SELECT
@@ -89,11 +90,21 @@ FROM
         JOIN
     calced_tweet_sentiments ON raw_tweets.tweet_id = calced_tweet_sentiments.tweet_id
 WHERE
-    raw_tweets.restaurant_id = 'N0CoaG3cBrTGm2ecLYSzqA'
-    """
+    raw_tweets.restaurant_id = '%s'
+    """ % rest_id
     data = execute(con,sql)
     df = pd.DataFrame(data)
     df['date'] = df['timestamp'].dt.date
+    df11=df[df['sentiment']==0].groupby(['date']).count()
+    results = []
+    length = len(df11.index)
+    for x in range(7):
+        results.append(int(df11['sentiment'][length-x-1]))
+    results.reverse()
+    print(results)
+    sys.stdout.flush()
+    return json.dumps(results, default = dtJson)
+
 
 
 

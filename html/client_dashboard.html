@@ -66,9 +66,9 @@
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
     <h2>Twitter</h2>
-      <div class=box></div>
+      <div class=box>y'all ever been to El Burro? People really wait in line out there! </div>
     <h2>Yelp</h2>
-      <div class=box></div>
+      <div class=box>Had them last night. Great morning left overs. The staff is polite and courteous. I love their beef Mongolian. I feel like they bread their chicken too much it is mushy. BUT great place, fast, good, and clean!</div>
   </div>
 
 <div class=left_stuff>
@@ -82,12 +82,13 @@
       <span class="fa fa-star checked"></span>
       <span class="fa fa-star"></span>
       <span class="fa fa-star"></span>
-    </div>
+    </div>-->
+<div id='myDiv'></div>
 
     <h3>Common Compliments</h3>
-      <p>This is going to require a BoW on the tweets.</p>
+      <p>Nice staff! warm </p>
     <h3>Common Complaints</h3>
-      <p>This is going to require a BoW on the tweets.</p> -->
+      <p>slow </p>
 </div>
 
 <div class=right_stuff>
@@ -95,7 +96,8 @@
   <div class=box></div>
 </div>
 
-  <div id='myDiv'></div>
+
+
 
 </body>
 
@@ -128,7 +130,17 @@ console.log(r_data);
   var data = [trace1];
   Plotly.newPlot('myDiv', data);
 
-
+  @app.route("/get_tweets/<rest_id>",methods = ['GET'])
+  def get_tweets(rest_id):
+      con = getConnection()
+      sql = "SELECT * from raw_tweets WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
+      data = execute(con, sql)
+      con.close()
+      if len(data) > 0:
+          return json.dumps(data,default = dtJson)
+      else:
+          #id not valid id
+          abort(404)
 
 </script>
 
