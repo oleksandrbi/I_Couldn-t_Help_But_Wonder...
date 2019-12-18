@@ -14,3 +14,4 @@ yelpDATASET/vegasREV.csv
 .DS_Store
 classified_tweets.csv
 sentimented_tweets.csv
+*.d2v
