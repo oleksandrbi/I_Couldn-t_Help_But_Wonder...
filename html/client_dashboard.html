@@ -57,6 +57,20 @@
 
   </style>
 
+  <script>
+  function httpGet(theUrl)
+  {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+      xmlHttp.send();
+      return xmlHttp.responseText;
+
+  }
+  var request = httpGet('http://127.0.0.1:5000/listRes')
+  let listRest = JSON.parse(request)
+
+  </script>
+
 </head>
 
 <body class=body>
@@ -65,9 +79,9 @@
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
     <h2>Twitter</h2>
-      <div class=box></div>
+      <div class=box id='twitterinfo'></div>
     <h2>Yelp</h2>
-      <div class=box></div>
+      <div class=box id='resinfo'></div>
   </div>
 
 <div class=left_stuff>
