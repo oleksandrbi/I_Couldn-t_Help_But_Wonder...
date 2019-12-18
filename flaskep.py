@@ -1,9 +1,11 @@
 from flask import *
+from flask_cors import CORS
 from sqlMethods import *
 import pymysql
 import json
 
 # to install : pip3 install flask
+# pip3 install -U flask-cors
 
 #for converting datetimes to json
 def dtJson(dt):
@@ -13,6 +15,7 @@ def dtJson(dt):
 
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def res():
