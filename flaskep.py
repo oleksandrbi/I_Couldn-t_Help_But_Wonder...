@@ -3,6 +3,7 @@ from flask_cors import CORS
 from sqlMethods import *
 import pymysql
 import json
+import pandas as pd
 
 # to install : pip3 install flask
 # pip3 install -U flask-cors
@@ -68,6 +69,23 @@ def get_tweets(rest_id):
     else:
         #id not valid id
         abort(404)
+
+
+def get_sentiment_count():
+    con = getConnection()
+    sql ="""
+    SELECT
+    raw_tweets.tweet_id, raw_tweets.timestamp, calced_tweet_sentiments.sentiment
+FROM
+    raw_tweets
+        JOIN
+    calced_tweet_sentiments ON raw_tweets.tweet_id = calced_tweet_sentiments.tweet_id
+WHERE
+    raw_tweets.restaurant_id = 'N0CoaG3cBrTGm2ecLYSzqA'
+    """
+    data = execute(con,sql)
+    df = pd.DataFrame(data)
+    df['date'] = df['timestamp'].dt.date
 
 
 
