@@ -24,7 +24,7 @@ def getIDFromName(rest_name):
     con = getConnection()
     sql = "SELECT restaurant_id from restaurant_data where restaurant_name='%s'" %rest_name
     resp = execute(con,sql)
-    return resp[0]['restaurant_id'] 
+    return resp[0]['restaurant_id']
 
 
 @app.route("/")
@@ -70,11 +70,30 @@ def get_restaurant(rest_id):
 @app.route("/get_tweets/<rest_id>",methods = ['GET'])
 def get_tweets(rest_id):
     con = getConnection()
-    sql = "SELECT * from raw_tweets WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
+    sql = "SELECT tweet_text,timestamp from raw_tweets WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
     data = execute(con, sql)
     con.close()
+
+    heap = json.dumps(data,default = dtJson)
+    print(heap)
     if len(data) > 0:
-        return json.dumps(data,default = dtJson)
+        return heap
+    else:
+        #id not valid id
+        abort(404)
+
+#you can adjust this to get less data by changing * to the columns you need
+@app.route("/get_yelpRvs/<rest_id>",methods = ['GET'])
+def get_yelpRvs(rest_id):
+    con = getConnection()
+    sql = "SELECT rating,review_text,timestamp from yelp_reviews WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
+    data = execute(con, sql)
+    con.close()
+
+    heap = json.dumps(data,default = dtJson)
+    print(heap)
+    if len(data) > 0:
+        return heap
     else:
         #id not valid id
         abort(404)

@@ -1,72 +1,83 @@
 <!DOCTYPE html>
-  <html lang="en">
-    <head>
+<html lang="en">
 
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>I Couldn't Help But Wonder</title>
-      <link rel="stylesheet" href="css/main.css">
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+<head>
 
-    </head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Couldn't Help But Wonder</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
 
-  <body>
+</head>
 
-    <div class="wrapper">
-      <div class="search_box">
-          <input id="inputBox" type="text" placeholder="Rediscover your Resturant" list="rests"/>
+<body>
 
-            <datalist id="rests">
+  <div class="wrapper">
+    <div class="search_box">
+      <input id="inputBox" type="text" placeholder="Rediscover your Resturant" list="rests" />
 
-            </datalist>
+      <datalist id="rests">
 
-          <button class="fas fa-search" type="button" onclick="goNext()"> </button>
-      </div>
+      </datalist>
+
+      <button class="fas fa-search" type="button" onclick="goNext()"> </button>
     </div>
-    <script>
-        function httpGet(theUrl)
-        {
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-            xmlHttp.send();
-            return xmlHttp.responseText;
+  </div>
+  <script>
+    //HTTP Request
+    function httpGet(theUrl) {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET", theUrl, false); // false for synchronous request
+      xmlHttp.send();
+      return xmlHttp.responseText;
 
+    }
+
+    //go to the next page
+    function goNext() {
+      console.log(input.value)
+      var rest_name = input.value
+      if (rest_name == '') {
+        alert('Please select a restaurant')
+      } else {
+        var rest_id = getIDFromName(listRest, rest_name)
+        window.location.href = 'client_dashboard.html?id=' + rest_id;
+        console.log(rest_id);
+      }
+    }
+
+    //translates the restaurant_name to the ID
+    function getIDFromName(listRest, rest_name) {
+      for (i = 0; i < listRest.length; i++) {
+        val = listRest[i];
+        console.log(val);
+        if (val['restaurant_name'] == rest_name) {
+          return val['restaurant_id']
         }
-        function goNext(rest_id)
-        {
-          console.log(input.value)
-          if (rest_id == ''){
-            alert('Please select a restaurant')
-          }
-          else{
-      window.location.href='client_dashboard.html?id=' + rest_id ;
-            console.log(rest_id);
-          }
-        }
-        var request = httpGet('http://127.0.0.1:5000/listRes')
-        let listRest = JSON.parse(request)
+      }
+    }
 
-        console.log(listRest)
-        let datalist = document.getElementById('rests')
-        for( i = 0 ; i < listRest.length; i++  ){
-          var opt = document.createElement("OPTION");
-          var t = document.createTextNode(listRest[i]['restaurant_name'])
-          opt.appendChild(t)
-          opt.setAttribute('data-id',listRest[i]['restaurant_id'])
-          datalist.appendChild(opt)
-          input = document.getElementById('inputBox')
+    var request = httpGet('http://127.0.0.1:5000/listRes')
+    let listRest = JSON.parse(request)
 
-        }
-
-
-
-    </script>
-    <!--
+    console.log(listRest)
+    let datalist = document.getElementById('rests')
+    for (i = 0; i < listRest.length; i++) {
+      var opt = document.createElement("OPTION");
+      var t = document.createTextNode(listRest[i]['restaurant_name'])
+      opt.appendChild(t)
+      opt.setAttribute('data-id', listRest[i]['restaurant_id'])
+      datalist.appendChild(opt)
+    }
+    input = document.getElementById('inputBox')
+  </script>
+  <!--
     <audio controls>
       <source src="mus.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
     </audio>
     !-->
-  </body>
+</body>
 
 </html>

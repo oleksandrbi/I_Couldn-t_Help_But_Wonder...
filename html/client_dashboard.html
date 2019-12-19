@@ -66,9 +66,13 @@
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
     <h2>Twitter</h2>
+    <div id = 'tweetCon'>
       <div class=box id = 'tweet1'>y'all ever been to Los ? People really wait in line out there! </div>
+    </div>
     <h2>Yelp</h2>
-      <div class=box, id = 'yelp1'>Had them last night. Great morning left overs. The staff is polite and courteous. I love their beef Mongolian. I feel like they bread their chicken too much it is mushy. BUT great place, fast, good, and clean!</div>
+      <div id = 'yelpCon'>
+      <div class=box id = 'yelp1'>Had them last night. Great morning left overs. The staff is polite and courteous. I love their beef Mongolian. I feel like they bread their chicken too much it is mushy. BUT great place, fast, good, and clean!</div>
+    </div>
   </div>
 
 <div class=left_stuff>
@@ -98,11 +102,28 @@
 -->
 
 
-
 </body>
 
 <script>
 
+function makeTweet(tweet){
+  var con = document.createElement('DIV');
+  var t = document.createTextNode(tweet['tweet_text'])
+  con.appendChild(t)
+  con.setAttribute('class', 'box')
+  return con
+}
+
+function makeYelpRv(review){
+  var con = document.createElement('DIV');
+  var t = document.createTextNode(review['review_text'])
+  con.appendChild(t)
+  con.setAttribute('class', 'box')
+  return con
+}
+
+
+//HTTP Request
 function httpGet(theUrl)
 {
     var xmlHttp = new XMLHttpRequest();
@@ -111,12 +132,37 @@ function httpGet(theUrl)
     return xmlHttp.responseText;
 
 }
-var rest_id = 'N0CoaG3cBrTGm2ecLYSzqA';
+var rest_id = location.search.substring(4)
 var request = httpGet('http://127.0.0.1:5000/get_restaurant/' + rest_id);
 let r_data = JSON.parse(request);
+
+
 //Set name
 document.getElementById('name').innerHTML = r_data['restaurant_name']
-document.getElementById('address').innerHTML = r_data['address'] + ' Las Vegas, NV'
+document.getElementById('address').innerHTML = r_data['address'] + ' '+ r_data['city'] + ', ' + r_data['state'] + ' ' + r_data['postal_code']
+document.title = r_data['restaurant_name']
+//Tweets
+var tw_request = httpGet('http://127.0.0.1:5000/get_tweets/' + rest_id);
+var tw_data = JSON.parse(tw_request);
+console.log(tw_data);
+var con = document.getElementById('tweetCon')
+for (i = 0; i <3; i++){
+  tw = tw_data[i];
+  var div = makeTweet(tw)
+  con.appendChild(div)
+}
+//yelp
+var yelp_request = httpGet('http://127.0.0.1:5000/get_yelpRvs/' + rest_id);
+var yelp_data = JSON.parse(yelp_request);
+console.log(yelp_data);
+var con = document.getElementById('yelpCon')
+for (i = 0; i <3; i++){
+  rv = yelp_data[i];
+  var div = makeYelpRv(rv)
+  con.appendChild(div)
+}
+
+
 
 console.log(r_data);
 
