@@ -66,9 +66,9 @@
   <div class=middle, align="center">
     <h1> New Posts about You! </h1>
     <h2>Twitter</h2>
-      <div class=box>y'all ever been to El Burro? People really wait in line out there! </div>
+      <div class=box id = 'tweet1'>y'all ever been to Los ? People really wait in line out there! </div>
     <h2>Yelp</h2>
-      <div class=box>Had them last night. Great morning left overs. The staff is polite and courteous. I love their beef Mongolian. I feel like they bread their chicken too much it is mushy. BUT great place, fast, good, and clean!</div>
+      <div class=box, id = 'yelp1'>Had them last night. Great morning left overs. The staff is polite and courteous. I love their beef Mongolian. I feel like they bread their chicken too much it is mushy. BUT great place, fast, good, and clean!</div>
   </div>
 
 <div class=left_stuff>
@@ -129,18 +129,6 @@ console.log(r_data);
   };
   var data = [trace1];
   Plotly.newPlot('myDiv', data);
-
-  @app.route("/get_tweets/<rest_id>",methods = ['GET'])
-  def get_tweets(rest_id):
-      con = getConnection()
-      sql = "SELECT * from raw_tweets WHERE restaurant_id = '%s' ORDER BY timestamp DESC LIMIT 20" % rest_id
-      data = execute(con, sql)
-      con.close()
-      if len(data) > 0:
-          return json.dumps(data,default = dtJson)
-      else:
-          #id not valid id
-          abort(404)
 
 </script>
 
