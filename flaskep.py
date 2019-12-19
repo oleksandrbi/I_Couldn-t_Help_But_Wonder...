@@ -19,7 +19,7 @@ def dtJson(dt):
 app = Flask(__name__)
 CORS(app)
 
-
+@app.route("/get_id/<rest_name>")
 def getIDFromName(rest_name):
     con = getConnection()
     sql = "SELECT restaurant_id from restaurant_data where restaurant_name='%s'" %rest_name

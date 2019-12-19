@@ -39,8 +39,8 @@
             alert('Please select a restaurant')
           }
           else{
-            //window.location.href='client_dashboard.html?id=' + rest_id ;
-            console.log(rest_id)
+      window.location.href='client_dashboard.html?id=' + rest_id ;
+            console.log(rest_id);
           }
         }
         var request = httpGet('http://127.0.0.1:5000/listRes')
